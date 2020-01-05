@@ -3,11 +3,13 @@ package hu.adam.kohoot.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
-@RequiredArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Player {
 
     @Id
@@ -19,4 +21,7 @@ public class Player {
 
     @ManyToOne
     private Game game;
+
+    @OneToMany
+    private List<Answer> answers;
 }
