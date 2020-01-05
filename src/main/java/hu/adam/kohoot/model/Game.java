@@ -17,8 +17,18 @@ public class Game {
     private Long id;
 
     @OneToMany
+    @Singular
     private List<Player> players;
 
     @OneToMany
+    @Singular
     private List<GameRound> gameRounds;
+
+    public void addPlayer(Player player){
+        players.add(player);
+    }
+
+    public void addGameRound(GameRound gameRound){
+        gameRounds.add(gameRound);
+    }
 }
