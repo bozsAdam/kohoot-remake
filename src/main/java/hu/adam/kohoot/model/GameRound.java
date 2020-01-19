@@ -17,6 +17,7 @@ public class GameRound {
 
     private String question;
     private String correctAnswer;
+    private Long startingTime;
 
     @ManyToOne
     private Game game;

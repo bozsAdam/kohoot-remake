@@ -20,7 +20,7 @@ public class Game {
     @Singular
     private List<Player> players;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @Singular
     private List<GameRound> gameRounds;
 
