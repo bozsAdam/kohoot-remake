@@ -1,11 +1,15 @@
 package hu.adam.kohoot.service;
 
+import hu.adam.kohoot.beans.Helper;
 import hu.adam.kohoot.exception.PlayerNotFoundException;
 import hu.adam.kohoot.model.Player;
 import hu.adam.kohoot.repository.PlayerRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -14,9 +18,10 @@ public class PlayerService {
     @Autowired
     private PlayerRepository playerRepository;
 
-    public void addPlayer(Player player){
+    public Player addPlayer(Player player){
         log.debug(String.format("Saving player with name %s", player.getName()));
-        playerRepository.save(player);
+        player.clearUnwantedFields();
+        return playerRepository.save(player);
     }
 
     public void removePlayer(Long id) throws PlayerNotFoundException {
@@ -30,11 +35,16 @@ public class PlayerService {
         return getPlayerFromDatabase(id);
     }
 
-    public void changePlayerName(Long id, String name) throws PlayerNotFoundException {
-        Player player = getPlayerFromDatabase(id);
-        player.setName(name);
+    public List<Player> getAllPlayer(){
+        return playerRepository.findAll();
+    }
 
-        playerRepository.save(player);
+    public Player updatePlayer(Player player, Long id) throws PlayerNotFoundException {
+        Player inDbPlayer = getPlayer(id);
+        player.setScore(inDbPlayer.getScore());
+        BeanUtils.copyProperties(player, inDbPlayer, Helper.getNullPropertyNames(player));
+
+        return playerRepository.save(inDbPlayer);
     }
 
     private Player getPlayerFromDatabase(Long id) throws PlayerNotFoundException {
