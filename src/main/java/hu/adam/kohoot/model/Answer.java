@@ -1,28 +1,19 @@
 package hu.adam.kohoot.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-
-@Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Answer {
 
-    @Id
-    @GeneratedValue
-    private Long id;
+    private Long playerId;
 
-    @ManyToOne
-    private Player player;
-
-    @ManyToOne
-    private GameRound gameRound;
+    private Long gameId;
 
     private String answer;
-
-    private Long elapsedTime;
-
 }

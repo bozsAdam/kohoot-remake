@@ -1,8 +1,17 @@
 package hu.adam.kohoot.model;
 
-import lombok.*;
 
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Singular;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.CascadeType;
 import java.util.List;
 
 @Entity
@@ -16,7 +25,7 @@ public class Game {
     @GeneratedValue
     private Long id;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     @Singular
     private List<Player> players;
 
@@ -31,4 +40,6 @@ public class Game {
     public void addGameRound(GameRound gameRound){
         gameRounds.add(gameRound);
     }
+
+    public void removeGameRound(GameRound gameRound) {gameRounds.remove(gameRound); }
 }

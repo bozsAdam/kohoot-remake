@@ -18,10 +18,8 @@ public class GameRound {
     private String question;
     private String correctAnswer;
     private Long startingTime;
+    private Long totalTime;
 
     @ManyToOne
     private Game game;
-
-    @OneToMany
-    private List<Answer> answers;
 }
