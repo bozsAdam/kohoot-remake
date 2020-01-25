@@ -1,5 +1,6 @@
 package hu.adam.kohoot.service;
 
+import hu.adam.kohoot.beans.Helper;
 import hu.adam.kohoot.exception.GameNotFoundException;
 import hu.adam.kohoot.exception.GameRoundAlreadyInGameException;
 import hu.adam.kohoot.exception.PlayerAlreadyInGameException;
@@ -11,6 +12,7 @@ import hu.adam.kohoot.model.Player;
 import hu.adam.kohoot.repository.GameRepository;
 import hu.adam.kohoot.repository.PlayerRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +28,34 @@ public class GameService {
     @Autowired
     private PlayerRepository playerRepository;
 
-    public void addPlayer(Player player, Long gameId) throws GameNotFoundException, PlayerAlreadyInGameException {
+    public Game addGame(Game game){
+        log.debug(String.format("Saving game with name %s", game.getRoomName()));
+        return gameRepository.save(game);
+    }
+
+    public void removeGame(Long id){
+        log.debug(String.format("Removing game with id: %s", id));
+        gameRepository.deleteById(id);
+    }
+
+    public Game getGame(Long id) throws GameNotFoundException {
+        return getGameFromDatabase(id);
+    }
+
+    public List<Game> getGames(){
+        return gameRepository.findAll();
+    }
+
+    public Game updateGame(Game game, Long id) throws GameNotFoundException {
+        Game inDbGame = getGame(id);
+        BeanUtils.copyProperties(game, inDbGame, Helper.getNullPropertyNames(game));
+
+        return gameRepository.save(inDbGame);
+    }
+
+    public void addPlayerToGame(Long playerId, Long gameId) throws GameNotFoundException, PlayerAlreadyInGameException, PlayerNotFoundException {
         Game game = getGameFromDatabase(gameId);
+        Player player = getPlayer(playerId);
         if(game.getPlayers().contains(player)){
             throw new PlayerAlreadyInGameException(String.format("%s is already in game", player.getName()));
         }
@@ -35,10 +63,32 @@ public class GameService {
         log.debug(String.format("Adding %s to the game", player.getName()));
         game.addPlayer(player);
         log.debug("Saving to the database....");
+        player.setGame(game);
         gameRepository.save(game);
     }
 
-    public void addGameRound(GameRound gameRound, Long gameId) throws GameNotFoundException, GameRoundAlreadyInGameException {
+    public void removePlayerFromGame(Long playerId, Long gameId) throws GameNotFoundException, PlayerNotFoundException {
+        Game game = getGameFromDatabase(gameId);
+        Player player = getPlayer(playerId);
+        if(game.getPlayers().contains(player)){
+            log.debug(String.format("Removing %s from the game", player.getName()));
+            game.removePlayer(player);
+            player.setGame(null);
+        }
+
+        log.debug("Saving to the database....");
+        gameRepository.save(game);
+        playerRepository.save(player);
+    }
+
+    public Game addGameRounds(List<GameRound> gameRounds, Long gameId) throws GameNotFoundException {
+        Game game = getGameFromDatabase(gameId);
+        game.setGameRounds(gameRounds);
+
+        return  gameRepository.save(game);
+    }
+
+    public Game addGameRound(GameRound gameRound, Long gameId) throws GameNotFoundException, GameRoundAlreadyInGameException {
         Game game = getGameFromDatabase(gameId);
         if(game.getGameRounds().contains(gameRound)){
             throw new GameRoundAlreadyInGameException("GameRound is already in Game");
@@ -47,7 +97,7 @@ public class GameService {
         log.debug("Adding GameRound to the game");
         game.addGameRound(gameRound);
         log.debug("Saving to the database....");
-        gameRepository.save(game);
+        return gameRepository.save(game);
     }
 
     public Integer getRoundsLeft(Long gameId) throws GameNotFoundException {
@@ -98,8 +148,7 @@ public class GameService {
         if(!gameRounds.isEmpty()){
             GameRound current = gameRounds.get(0);
             if(current.getCorrectAnswer().equals(answer.getAnswer())){
-                Player player = playerRepository.findById(answer.getPlayerId())
-                                                .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
+                Player player = getPlayer(answer.getPlayerId());
                 if(!player.isAlreadyAnswered()) {
                     player.add(calculateScore(current.getStartingTime(), current.getTotalTime()));
                     player.setAlreadyAnswered(true);
@@ -116,5 +165,10 @@ public class GameService {
     private Game getGameFromDatabase(Long gameId) throws GameNotFoundException {
         log.debug(String.format("Getting game with id: %s from the database", gameId));
         return gameRepository.findById(gameId).orElseThrow(() -> new GameNotFoundException("Game not found"));
+    }
+
+    private Player getPlayer(Long id) throws PlayerNotFoundException {
+        return playerRepository.findById(id)
+                .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
     }
 }
