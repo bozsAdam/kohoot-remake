@@ -1,15 +1,21 @@
 package hu.adam.kohoot.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class GameRound {
     @Id
     @GeneratedValue
@@ -20,6 +26,7 @@ public class GameRound {
     private Long startingTime;
     private Long totalTime;
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     private Game game;
 }

@@ -1,10 +1,8 @@
 package hu.adam.kohoot.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.*;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,6 +14,9 @@ import javax.persistence.ManyToOne;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Player {
 
     @Id
@@ -26,6 +27,7 @@ public class Player {
     private Integer score;
     private boolean alreadyAnswered;
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     private Game game;
 
@@ -38,5 +40,16 @@ public class Player {
         score = 0;
         game = null;
 
+    }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", score=" + score +
+                ", alreadyAnswered=" + alreadyAnswered +
+                ", gameId=" + game.getId() +
+                '}';
     }
 }
