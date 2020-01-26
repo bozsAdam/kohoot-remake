@@ -80,7 +80,7 @@ public class GameController {
 
    @GetMapping("/games/{gameId}/start")
     public QuestionWrapper startGameRound(@PathVariable("gameId") Long gameId) throws GameNotFoundException {
-        return new QuestionWrapper(gameService.startGameRound(gameId));
+        return gameService.startGameRound(gameId);
    }
 
     @GetMapping("/games/{gameId}/end")
