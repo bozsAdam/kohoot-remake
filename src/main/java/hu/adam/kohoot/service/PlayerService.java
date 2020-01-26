@@ -20,7 +20,6 @@ public class PlayerService {
 
     public Player addPlayer(Player player){
         log.debug(String.format("Saving player with name %s", player.getName()));
-        player.clearUnwantedFields();
         return playerRepository.save(player);
     }
 

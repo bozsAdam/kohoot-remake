@@ -14,17 +14,18 @@ import javax.persistence.ManyToOne;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
 public class Player {
 
     @Id
     @GeneratedValue
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     private String name;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer score;
+
     private boolean alreadyAnswered;
 
     @EqualsAndHashCode.Exclude
@@ -33,13 +34,6 @@ public class Player {
 
     public void add(Integer score){
         this.score += score;
-    }
-
-    public void clearUnwantedFields(){
-        id = null;
-        score = 0;
-        game = null;
-
     }
 
     @Override

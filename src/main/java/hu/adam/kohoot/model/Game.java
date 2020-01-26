@@ -1,8 +1,7 @@
 package hu.adam.kohoot.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,13 +16,11 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
 public class Game {
 
     @Id
     @GeneratedValue
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     @Column(unique = true)
@@ -31,10 +28,12 @@ public class Game {
 
     @OneToMany(cascade = CascadeType.PERSIST)
     @Singular
+    @JsonIgnoreProperties("game")
     private List<Player> players;
 
     @OneToMany(cascade = CascadeType.ALL)
     @Singular
+    @JsonIgnoreProperties("game")
     private List<GameRound> gameRounds;
 
     public void addPlayer(Player player){
@@ -48,8 +47,4 @@ public class Game {
     }
 
     public void removeGameRound(GameRound gameRound) {gameRounds.remove(gameRound); }
-
-    public void clearUnwantedFields(){
-        id = null;
-    }
 }
