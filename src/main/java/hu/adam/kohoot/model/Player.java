@@ -24,7 +24,7 @@ public class Player {
     private String name;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Integer score;
+    private Integer score =  0;
 
     private boolean alreadyAnswered;
 

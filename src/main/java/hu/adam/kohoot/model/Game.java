@@ -29,11 +29,13 @@ public class Game {
     @OneToMany(cascade = CascadeType.PERSIST)
     @Singular
     @JsonIgnoreProperties("game")
+    @OrderColumn
     private List<Player> players;
 
     @OneToMany(cascade = CascadeType.ALL)
     @Singular
     @JsonIgnoreProperties("game")
+    @OrderColumn
     private List<GameRound> gameRounds;
 
     public void addPlayer(Player player){

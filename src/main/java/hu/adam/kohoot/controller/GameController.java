@@ -11,6 +11,7 @@ import hu.adam.kohoot.model.Player;
 import hu.adam.kohoot.service.GameService;
 import hu.adam.kohoot.wrapper.GameRoundWrapper;
 import hu.adam.kohoot.wrapper.QuestionWrapper;
+import hu.adam.kohoot.wrapper.ReceivedAnswerWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -88,8 +89,8 @@ public class GameController {
     }
 
     @PostMapping("/games/answers")
-    public void receiveAnswer(@RequestBody Answer answer) throws PlayerNotFoundException, GameNotFoundException {
-        gameService.receiveAnswer(answer);
+    public ReceivedAnswerWrapper receiveAnswer(@RequestBody Answer answer) throws PlayerNotFoundException, GameNotFoundException {
+        return gameService.receiveAnswer(answer);
     }
 
 }
