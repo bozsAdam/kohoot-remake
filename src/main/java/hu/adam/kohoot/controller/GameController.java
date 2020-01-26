@@ -58,13 +58,13 @@ public class GameController {
     }
 
     @PostMapping("/games/{gameId}/gamerounds")
-    public void addGameRounds(@PathVariable("gameId") Long gameId, @RequestBody GameRoundWrapper gameRounds) throws GameNotFoundException {
-        gameService.addGameRounds(gameRounds.getGameRounds(), gameId);
+    public Game addGameRounds(@PathVariable("gameId") Long gameId, @RequestBody GameRoundWrapper gameRounds) throws GameNotFoundException {
+        return gameService.addGameRounds(gameRounds.getGameRounds(), gameId);
     }
 
     @PostMapping("/games/{gameId}/gameround")
-    public void addGameRounds(@PathVariable("gameId") Long gameId, @RequestBody GameRound gameRound) throws GameNotFoundException, GameRoundAlreadyInGameException {
-        gameService.addGameRound(gameRound, gameId);
+    public Game addGameRounds(@PathVariable("gameId") Long gameId, @RequestBody GameRound gameRound) throws GameNotFoundException, GameRoundAlreadyInGameException {
+        return gameService.addGameRound(gameRound, gameId);
     }
 
    @GetMapping("/games/{gameId}/rounds")
