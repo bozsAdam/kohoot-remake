@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class QuestionWrapper {
-    private String question;
+public class ReceivedAnswerWrapper {
+    private boolean received;
     private String message;
 }

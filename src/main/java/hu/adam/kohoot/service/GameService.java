@@ -11,6 +11,7 @@ import hu.adam.kohoot.model.GameRound;
 import hu.adam.kohoot.model.Player;
 import hu.adam.kohoot.repository.GameRepository;
 import hu.adam.kohoot.repository.PlayerRepository;
+import hu.adam.kohoot.wrapper.QuestionWrapper;
 import hu.adam.kohoot.wrapper.ReceivedAnswerWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -113,27 +114,33 @@ public class GameService {
         return game.getPlayers();
     }
 
-    public String startGameRound(Long gameId) throws GameNotFoundException {
+    public QuestionWrapper startGameRound(Long gameId) throws GameNotFoundException {
         Game game = getGameFromDatabase(gameId);
         List<GameRound> gameRounds = game.getGameRounds();
 
         if (gameRounds.isEmpty()) {
             log.debug("GameRound list is empty.");
-            return "The game has ended";
+            return QuestionWrapper.builder()
+                    .message("The game has ended")
+                    .build();
         }
 
         GameRound current = gameRounds.get(0);
 
-        if(current.getStartingTime() == null){
+        if (current.getStartingTime() == null) {
             current.setStartingTime(System.nanoTime());
             gameRounds.set(0, current);
             game.setGameRounds(gameRounds);
             gameRepository.saveAndFlush(game);
 
-            return current.getQuestion();
+            return QuestionWrapper.builder()
+                                    .question(current.getQuestion())
+                                    .build();
         }
 
-        return "There is a game going on right now!!";
+        return QuestionWrapper.builder()
+                                .message("There is a game going on right now!!")
+                                .build();
 
 
     }
@@ -167,9 +174,9 @@ public class GameService {
                         playerRepository.save(player);
 
                         return ReceivedAnswerWrapper.builder()
-                                                    .received(true)
-                                                    .message("Answer successfully received")
-                                                    .build();
+                                .received(true)
+                                .message("Answer successfully received")
+                                .build();
                     }
                 }
             } else {
@@ -188,7 +195,7 @@ public class GameService {
     }
 
     private Integer calculateScore(Long startingTime, Long totalTime) {
-        int result = (int) ((1 - ((float)(System.nanoTime() - startingTime) / totalTime / 2)) * 1000);
+        int result = (int) ((1 - ((float) (System.nanoTime() - startingTime) / totalTime / 2)) * 1000);
 
         return Math.max(result, 0);
     }
